@@ -170,6 +170,9 @@ import { useRouter } from 'vue-router'
 export default {
   name: 'GooglePhotosLayout',
 
+  created () {
+    this.$api.defaults.headers.common.authorization = `${localStorage.getItem('tokenType')} ${localStorage.getItem('accessToken')}`
+  },
   setup () {
     /**
      * Status menu

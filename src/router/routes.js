@@ -8,6 +8,16 @@ const routes = [
       { path: 'biller', name: 'Biller', component: () => import('pages/BillerPage.vue') }
     ]
   },
+  {
+    path: '/',
+    children: [
+      {
+        path: 'login',
+        name: 'Login',
+        component: () => import('pages/LoginPage.vue')
+      }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it
