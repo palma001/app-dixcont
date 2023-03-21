@@ -122,11 +122,11 @@
                   row-key="name"
                   title="Articulos"
                   dense
+                  hide-pagination
                   :rows="products"
                   :columns="columns"
                   :loading="loadingPage"
-                  hide-pagination
-                  v-model:pagination="pagination"
+                  :pagination="{ rowsPerPage: 0 }"
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props">
@@ -160,58 +160,84 @@
               </div>
             </div>
           </div>
-          <div class="col-6" style="max-height: 50px;">
-            <q-table
-              row-key="name"
-              dense
-              grid
-              hide-pagination
-              :rows="allPorducts"
-              :columns="productColumns"
-              :loading="loadingPage"
-              :filter="filter"
-              v-model:pagination="pagination"
-            >
-              <template v-slot:top>
-                <div class="row full-width q-col-gutter-xs">
-                  <div class="col-6">
-                    <q-select
-                      use-input
-                      filled
-                      dense
-                      clearable
-                      label="Categorías"
-                      input-debounce="0"
-                      option-label="name"
-                      option-value="id"
-                      v-model="category"
-                      :options="categories"
-                      @filter="filterCategories"
-                    />
-                  </div>
-                  <div class="col-6">
-                    <q-input filled dense debounce="300" v-model="filter" placeholder="Buscar">
-                      <template v-slot:append>
-                        <q-icon name="search" />
-                      </template>
-                    </q-input>
-                  </div>
-                </div>
-              </template>
-              <template v-slot:item="props">
-                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-                  <q-card class="my-card">
-                    <q-img style="height: 150px; width: 100%" :src="props.row.images[0] ? props.row.images[0].url : 'https://cdn.quasar.dev/img/image-src.png'" @click="validateProduct(props.row)">
-                      <div class="absolute-full text-subtitle2 flex flex-center">
-                        {{ props.row.name }}
-                      </div>
-                    </q-img>
-                  </q-card>
-                </div>
-              </template>
-            </q-table>
-          </div>
           <div class="col-6">
+            <div class="row full-width q-col-gutter-sm row">
+              <div class="col-6">
+                <q-select
+                  use-input
+                  filled
+                  dense
+                  clearable
+                  label="Categorías"
+                  input-debounce="0"
+                  option-label="name"
+                  option-value="id"
+                  v-model="category"
+                  :options="categories"
+                  @filter="filterCategories"
+                />
+              </div>
+              <div class="col-6">
+                <q-input filled dense debounce="300" v-model="filter" placeholder="Buscar">
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </div>
+            </div>
+            <div class="col-12">
+              <data-table
+                row-key="name"
+                dense
+                grid
+                hide-pagination
+                :rows="allPorducts"
+                :columns="productColumns"
+                :loading="loadingPage"
+                :filter="filter"
+                :pagination="pagination"
+                @setPagination="getAllPorducts"
+                @search="searchData"
+              >
+                <template v-slot:item="{ props }">
+                  <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+                    <q-card class="my-card">
+                      <q-img style="height: 150px; width: 100%" :src="props.row.images[0] ? props.row.images[0].url : 'https://cdn.quasar.dev/img/image-src.png'" @click="validateProduct(props.row)">
+                        <div class="absolute-full text-subtitle2 flex flex-center">
+                          {{ props.row.name }}
+                        </div>
+                      </q-img>
+                    </q-card>
+                  </div>
+                </template>
+              </data-table>
+              <!-- <q-table
+                row-key="name"
+                dense
+                grid
+                hide-pagination
+                :rows="allPorducts"
+                :columns="productColumns"
+                :loading="loadingPage"
+                :filter="filter"
+                v-model:pagination="pagination"
+              >
+              </q-table> -->
+            </div>
+            <div class="col-12 q-pa-lg flex flex-center">
+              <q-pagination
+                v-model="pagination.rowsPerPage"
+                :max="5"
+                direction-links
+                boundary-links
+                icon-first="skip_previous"
+                icon-last="skip_next"
+                icon-prev="fast_rewind"
+                icon-next="fast_forward"
+              />
+            </div>
+          </div>
+          <!-- <div class="col-6">
             <q-list dense separator v-if="invoiceType">
               <q-item>
                 <q-item-section>
@@ -238,7 +264,7 @@
                 </q-item-section>
               </q-item>
             </q-list>
-          </div>
+          </div> -->
         </div>
       </q-form>
     </q-card>
@@ -349,7 +375,7 @@
         </q-bar>
         <q-form @submit="saveClient">
           <q-card-section class="row q-col-gutter-sm">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-mb-sm">
               <q-option-group
                 type="radio"
                 inline
@@ -365,7 +391,6 @@
                 filled
                 dense
                 v-model="clientAdded.document_number"
-                autofocus
                 label="Número de documento"
               />
             </div>
@@ -421,6 +446,7 @@
 
 <script>
 // import { StreamBarcodeReader } from 'vue-barcode-reader'
+import DataTable from '../components/DataTable.vue'
 import { Notify } from 'quasar'
 // import { DraggableResizableVue, DraggableResizableContainer } from 'draggable-resizable-vue3'
 // import InvoicePrint from '../components/InvoicePrint.vue'
@@ -428,18 +454,29 @@ import { Notify } from 'quasar'
 export default {
   // name: 'PageName',
   components: {
+    DataTable
     // StreamBarcodeReader
     // BillOfSale
   },
   data () {
     return {
       barcode: null,
+      current: 3,
       docuemntTypeAll: [],
       documentType: null,
       invoiceTaxes: [],
       openAddClient: false,
       taxeTranslate: {
         percentage: '%'
+      },
+      params: {
+        paginate: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        perPage: 1,
+        dataSearch: {
+          id: ''
+        }
       },
       clientAdded: {},
       taxes: [],
@@ -463,7 +500,13 @@ export default {
        * Pagination option
        * @type {Objct}
        */
-      pagination: { rowsPerPage: 10 },
+      pagination: {
+        rowsPerPage: 20,
+        rowsNumber: 20,
+        paginate: true,
+        sortBy: 'id',
+        sortOrder: 'desc'
+      },
       thumbStyle: {
         right: '4px',
         borderRadius: '5px',
@@ -559,7 +602,10 @@ export default {
   },
   watch: {
     category () {
-      this.getAllPorducts()
+      this.getAllPorducts(this.params)
+    },
+    documentType (val) {
+      this.clientAdded.document_type_id = val
     },
     totalBill () {
       this.invoiceTaxes = this.invoiceType.taxes.map(taxe => {
@@ -598,9 +644,15 @@ export default {
     this.getTaxes()
     this.getPaymentMethods()
     this.getDocuemntTypes()
-    this.getAllPorducts()
   },
   methods: {
+    searchData (data) {
+      for (const dataSearch in this.params.dataSearch) {
+        this.params.dataSearch[dataSearch] = data
+      }
+      this.params.page = 1
+      this.getAllPorducts(this.params)
+    },
     /**
      * Calculate taxe
      * @param {Object} taxe
@@ -857,18 +909,11 @@ export default {
     /**
      * Get all tables
      */
-    getAllPorducts () {
-      this.$api.get('products', {
-        params: {
-          sortBy: 'id',
-          sortOrder: 'desc',
-          dataFilter: {
-            category_id: this.category ? this.category.id : null
-          }
-        }
-      })
+    getAllPorducts (params = this.params) {
+      this.$api.get('products', { params })
         .then(({ data }) => {
-          this.allPorducts = data
+          console.log(data)
+          this.allPorducts = data.data
         })
         .catch(err => {
           Notify.create({
