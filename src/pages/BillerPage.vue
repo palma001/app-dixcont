@@ -6,7 +6,7 @@
           <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
             <q-card class="bg-teal text-white" @click="exchange = !exchange">
               <q-card-section class="text-subtitle2 text-center">
-                <span v-if="coin">{{ coin.symbol }}</span>{{ totalTaxe }}
+                <span v-if="coin">{{ coin.symbol }}</span>{{ formatNumber(totalBill) }}
                 <!-- <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
                   <q-banner>
                     {{ (totalBill * exchangeRate).toFixed(2) }} Bs
@@ -92,7 +92,7 @@
               :rules="[val => !!val || 'El campo es requerido.']"
             />
           </div>
-          <div class="col-6">
+          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 col-xs-12">
             <div class="row q-col-gutter-sm">
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <q-input filled dense v-model="barcode" autofocus type="number" label="Código" @keypress.enter="getOnePorduct(this.barcode)">
@@ -102,20 +102,7 @@
                 </q-input>
               </div>
               <div class=" col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 q-gutter-sm">
-                <q-btn
-                  color="secondary"
-                  icon="attach_money"
-                  @click="dialogPayment = true"
-                >
-                  <q-badge floating color="negative">
-                    {{ payments.length }}
-                  </q-badge>
-                </q-btn>
-                <q-btn
-                  icon="print"
-                  color="primary"
-                  @click="submitBill"
-                />
+                <q-input v-model.number="amount" type="number" label="Cantidad" dense filled/>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-12">
                 <q-table
@@ -143,13 +130,13 @@
                         </q-popup-edit>
                       </q-td>
                       <q-td key="price" :props="props">
-                        {{ props.row.price }}
+                        {{ formatNumber(props.row.price) }}
                         <q-popup-edit v-model.number="props.row.price" auto-save v-slot="scope" @update:model-value="calculate(props.row)">
                           <q-input label="Precio" type="number" v-model.number="scope.value" autofocus @keyup.enter="scope.set" />
                         </q-popup-edit>
                       </q-td>
                       <q-td key="subtotal" :props="props">
-                        {{ props.row.subtotal }}
+                        {{ formatNumber(props.row.subtotal) }}
                       </q-td>
                       <q-td key="actions" :props="props">
                         <q-btn icon="delete" size="xs" color="negative" @click="deleteProduct(props)"/>
@@ -160,7 +147,7 @@
               </div>
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12">
             <div class="row full-width q-col-gutter-sm row">
               <div class="col-6">
                 <q-select
@@ -186,23 +173,25 @@
               </div>
             </div>
             <div class="col-12">
-              <data-table
+              <q-table
                 row-key="name"
-                dense
+                no-data-label="Registro no encontrado"
+                binary-state-sort
                 grid
                 hide-pagination
-                :rows="allPorducts"
-                :columns="productColumns"
-                :loading="loadingPage"
+                :columns="columns"
+                :rows="allProducts"
                 :filter="filter"
-                :pagination="pagination"
-                @setPagination="getAllPorducts"
-                @search="searchData"
+                v-model:pagination="pagination"
+                @request="setPagination"
               >
-                <template v-slot:item="{ props }">
+                <template v-slot:loading>
+                  <q-inner-loading showing color="primary" />
+                </template>
+                <template v-slot:item="props">
                   <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-                    <q-card class="my-card">
-                      <q-img style="height: 150px; width: 100%" :src="props.row.images[0] ? props.row.images[0].url : 'https://cdn.quasar.dev/img/image-src.png'" @click="validateProduct(props.row)">
+                    <q-card class="my-card cursor-pointer">
+                      <q-img style="height: 150px; width: 100" :src="props.row.images[0] ? props.row.images[0].url : 'https://cdn.quasar.dev/img/image-src.png'" @click="validateProduct(props.row)">
                         <div class="absolute-full text-subtitle2 flex flex-center">
                           {{ props.row.name }}
                         </div>
@@ -210,61 +199,41 @@
                     </q-card>
                   </div>
                 </template>
-              </data-table>
-              <!-- <q-table
-                row-key="name"
-                dense
-                grid
-                hide-pagination
-                :rows="allPorducts"
-                :columns="productColumns"
-                :loading="loadingPage"
-                :filter="filter"
-                v-model:pagination="pagination"
-              >
-              </q-table> -->
+              </q-table>
             </div>
             <div class="col-12 q-pa-lg flex flex-center">
               <q-pagination
-                v-model="pagination.rowsPerPage"
-                :max="5"
                 direction-links
                 boundary-links
                 icon-first="skip_previous"
                 icon-last="skip_next"
                 icon-prev="fast_rewind"
                 icon-next="fast_forward"
+                :max-pages="5"
+                :ellipses="false"
+                :boundary-numbers="false"
+                v-model="pagination.rowsPerPage"
+                :max="maxProducts"
+                @update:model-value="updatePage"
+              />
+            </div>
+            <div class="col-12 q-gutter-sm text-right">
+              <q-btn
+                color="secondary"
+                icon="attach_money"
+                @click="dialogPayment = true"
+              >
+                <q-badge floating color="negative">
+                  {{ payments.length }}
+                </q-badge>
+              </q-btn>
+              <q-btn
+                icon="print"
+                color="primary"
+                @click="submitBill"
               />
             </div>
           </div>
-          <!-- <div class="col-6">
-            <q-list dense separator v-if="invoiceType">
-              <q-item>
-                <q-item-section>
-                  Op Gravada
-                </q-item-section>
-                <q-item-section side v-if="coin">
-                  {{ coin.symbol }}{{ totalBill }}
-                </q-item-section>
-              </q-item>
-              <q-item v-for="taxe in invoiceType.taxes" :key="taxe.id">
-                <q-item-section>
-                  {{ taxe.name }} ({{ taxe.pivot.amount }}{{ taxeTranslate[taxe.pivot.type_taxe]}})
-                </q-item-section>
-                <q-item-section side v-if="coin">
-                  {{ coin.symbol }}{{ calculateTaxe(taxe) }}
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  Importe total
-                </q-item-section>
-                <q-item-section side v-if="coin">
-                  {{ coin.symbol }}{{ totalTaxe }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div> -->
         </div>
       </q-form>
     </q-card>
@@ -446,7 +415,6 @@
 
 <script>
 // import { StreamBarcodeReader } from 'vue-barcode-reader'
-import DataTable from '../components/DataTable.vue'
 import { Notify } from 'quasar'
 // import { DraggableResizableVue, DraggableResizableContainer } from 'draggable-resizable-vue3'
 // import InvoicePrint from '../components/InvoicePrint.vue'
@@ -454,7 +422,6 @@ import { Notify } from 'quasar'
 export default {
   // name: 'PageName',
   components: {
-    DataTable
     // StreamBarcodeReader
     // BillOfSale
   },
@@ -466,6 +433,7 @@ export default {
       documentType: null,
       invoiceTaxes: [],
       openAddClient: false,
+      amount: 1,
       taxeTranslate: {
         percentage: '%'
       },
@@ -473,9 +441,10 @@ export default {
         paginate: true,
         sortBy: 'id',
         sortOrder: 'desc',
-        perPage: 1,
+        perPage: 9,
         dataSearch: {
-          id: ''
+          barcode: '',
+          name: ''
         }
       },
       clientAdded: {},
@@ -493,7 +462,6 @@ export default {
       coin: null,
       clients: [],
       client: null,
-      tableSelected: [],
       exchange: false,
       exchangeRate: 0,
       /**
@@ -501,8 +469,8 @@ export default {
        * @type {Objct}
        */
       pagination: {
-        rowsPerPage: 20,
-        rowsNumber: 20,
+        rowsPerPage: 1,
+        rowsNumber: 9,
         paginate: true,
         sortBy: 'id',
         sortOrder: 'desc'
@@ -525,7 +493,7 @@ export default {
       products: [],
       loadingPage: false,
       totalBill: 0,
-      allPorducts: [],
+      allProducts: [],
       categories: [],
       userSession: {},
       productColumns: [
@@ -585,12 +553,11 @@ export default {
         }
       })
     },
+    maxProducts () {
+      return Math.ceil(this.params.rowsNumber / this.params.perPage)
+    },
     pendingPayment () {
       return this.totalBill - this.totalPayment
-    },
-    totalTaxe () {
-      const sum = this.invoiceType ? this.invoiceType.taxes.reduce((accumulator, currentValue) => accumulator + currentValue.total, 0) : 0
-      return sum + this.totalBill
     },
     totalPayment () {
       let totalPayment = 0
@@ -601,23 +568,17 @@ export default {
     }
   },
   watch: {
-    category () {
+    filter (data) {
+      this.searchData(data)
+    },
+    category (data) {
+      this.params.dataFilter = {
+        category_id: data ? data.id : null
+      }
       this.getAllPorducts(this.params)
     },
     documentType (val) {
       this.clientAdded.document_type_id = val
-    },
-    totalBill () {
-      this.invoiceTaxes = this.invoiceType.taxes.map(taxe => {
-        return {
-          taxe_id: taxe.id,
-          amount: taxe.pivot.amount,
-          type_taxe: taxe.pivot.type_taxe
-        }
-      })
-    },
-    tableSelected (data) {
-      localStorage.setItem('tableSelected', JSON.stringify(data))
     },
     payments (data) {
       localStorage.setItem('payments', JSON.stringify(data))
@@ -644,8 +605,24 @@ export default {
     this.getTaxes()
     this.getPaymentMethods()
     this.getDocuemntTypes()
+    this.setPagination({
+      pagination: this.pagination,
+      filter: undefined
+    })
   },
   methods: {
+    updatePage (data) {
+      this.params.page = data
+      this.getAllPorducts(this.params)
+    },
+    setPagination (data) {
+      this.params.sortOrder = data.pagination.descending ? 'asc' : 'desc'
+      this.params.page = data.pagination.page
+      this.params.sortBy = data.pagination.sortBy ?? this.params.sortBy
+      this.params.perPage = data.pagination.rowsNumber
+      this.pagination = data.pagination
+      this.getAllPorducts(this.params)
+    },
     searchData (data) {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
@@ -703,6 +680,12 @@ export default {
     cancelPayment () {
       this.dialogPayment = false
       this.payments = []
+    },
+    /**
+     * Format number
+     */
+    formatNumber (data) {
+      return data.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     },
     /**
      * Add bill payment
@@ -912,8 +895,8 @@ export default {
     getAllPorducts (params = this.params) {
       this.$api.get('products', { params })
         .then(({ data }) => {
-          console.log(data)
-          this.allPorducts = data.data
+          this.allProducts = data.data
+          this.params.rowsNumber = data.total
         })
         .catch(err => {
           Notify.create({
@@ -990,7 +973,6 @@ export default {
       this.userSession = JSON.parse(localStorage.getItem('user'))
       this.products = JSON.parse(localStorage.getItem('products')) ?? []
       this.payments = JSON.parse(localStorage.getItem('payments')) ?? []
-      this.tableSelected = JSON.parse(localStorage.getItem('tableSelected')) ?? []
       this.client = JSON.parse(localStorage.getItem('client')) ?? null
       this.invoiceType = JSON.parse(localStorage.getItem('invoiceType')) ?? null
       this.typeOfService = JSON.parse(localStorage.getItem('typeOfService')) ?? null
@@ -1008,6 +990,7 @@ export default {
      */
     deleteProduct (product) {
       this.products.splice(product.rowIndex, 1)
+      localStorage.setItem('products', JSON.stringify(this.products))
       this.calculateTotal()
     },
     /**
@@ -1042,11 +1025,11 @@ export default {
     validateProduct (data) {
       const findProduct = this.products.find(product => product.id === data.id)
       if (findProduct) {
-        findProduct.amount += 1
+        findProduct.amount += this.amount
         findProduct.product_id = findProduct.id
         this.calculate(findProduct)
       } else {
-        data.amount = 1
+        data.amount = this.amount
         data.subtotal = 0
         data.product_id = data.id
         this.products.push(data)

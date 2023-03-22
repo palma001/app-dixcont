@@ -240,6 +240,68 @@ export default {
               icon: 'receipt_long',
               title: 'Facturar',
               route: 'Biller'
+            },
+            {
+              icon: 'widgets',
+              title: 'Productos',
+              route: 'Product'
+            },
+            {
+              icon: 'list_alt',
+              title: 'Reporte de caja',
+              route: 'BoxReport'
+            }
+          ]
+        },
+        {
+          title: 'Personal',
+          icon: 'person',
+          children: [
+            {
+              icon: 'face',
+              title: 'Vendedores',
+              route: 'Seller'
+            },
+            {
+              icon: 'face_6',
+              title: 'Clientes',
+              route: 'Client'
+            }
+          ]
+        },
+        {
+          title: 'Configuración',
+          icon: 'settings',
+          children: [
+            {
+              icon: 'attach_money',
+              title: 'Moneda',
+              route: 'Coin'
+            },
+            {
+              icon: 'credit_card',
+              title: 'Metodos de pago',
+              route: 'PaymentMethod'
+            },
+            {
+              icon: 'summarize',
+              title: 'Tipo de factura',
+              route: 'InvoiceType'
+            },
+            {
+              icon: 'category',
+              title: 'Categorias',
+              route: 'Category'
+            },
+            {
+              icon: 'supervised_user_circle',
+              title: 'Roles',
+              route: 'Role'
+            },
+            {
+              icon: 'account_circle',
+              title: 'Usuarios',
+              route: 'User'
             }
           ]
         }
