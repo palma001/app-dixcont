@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr fff" class="bg-grey-1">
-    <q-header elevated class="bg-white text-grey-8" height-hint="64">
+    <q-header elevated :class="!$q.dark.isActive ? 'bg-white text-grey-8': ''" height-hint="64">
       <q-toolbar class="GPL__toolbar" style="height: 64px">
         <q-btn
           flat
@@ -59,7 +59,22 @@
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
-            <q-tooltip>Account</q-tooltip>
+            <q-tooltip>John Doe</q-tooltip>
+            <q-menu>
+              <div style="min-width: 150px;" class="text-center q-pa-md">
+                <q-avatar size="72px">
+                  <img src="https://cdn.quasar.dev/img/avatar4.jpg">
+                </q-avatar>
+                <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
+                <q-btn
+                  color="primary"
+                  label="Logout"
+                  push
+                  size="sm"
+                  v-close-popup
+                />
+              </div>
+          </q-menu>
           </q-btn>
         </div>
       </q-toolbar>
@@ -173,12 +188,22 @@ export default {
   created () {
     this.$api.defaults.headers.common.authorization = `${localStorage.getItem('tokenType')} ${localStorage.getItem('accessToken')}`
   },
+  watch: {
+    darkMode (data) {
+      this.$q.dark.set(data)
+    }
+  },
   setup () {
     /**
      * Status menu
      * @type {Boolean}
      */
     const leftDrawerOpen = ref(false)
+    /**
+     * Dark mode status
+     * @type {Boolean}
+     */
+    const darkMode = ref(false)
     /**
      * Search menu
      * @type {String}
@@ -218,6 +243,7 @@ export default {
       leftDrawerOpen,
       search,
       currentPath,
+      darkMode,
       createMenu: [
         { icon: 'photo_album', text: 'Album' },
         { icon: 'people', text: 'Shared Album' },

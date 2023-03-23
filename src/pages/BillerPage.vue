@@ -226,12 +226,28 @@
                 <q-badge floating color="negative">
                   {{ payments.length }}
                 </q-badge>
+                <q-tooltip>
+                  Agregar pagos
+                </q-tooltip>
               </q-btn>
               <q-btn
                 icon="print"
+                color="orange"
+                @click="submitBill"
+              >
+                <q-tooltip>
+                  Guardar e imprimir
+                </q-tooltip>
+              </q-btn>
+              <q-btn
+                icon="save"
                 color="primary"
                 @click="submitBill"
-              />
+              >
+                <q-tooltip>
+                  Guardar
+                </q-tooltip>
+              </q-btn>
             </div>
           </div>
         </div>
@@ -282,7 +298,7 @@
                     </q-popup-edit>
                   </td>
                   <td class="text-right">
-                    {{ payment.amount }}
+                    {{ formatNumber(payment.amount) }}
                     <q-popup-edit
                       v-model.number="payment.amount"
                       auto-save
@@ -307,7 +323,7 @@
                 <tr>
                   <th colspan="4">
                     Restante a pagar:
-                    <span v-if="coin">{{ coin.symbol }}</span>{{ pendingPayment }}
+                    <span v-if="coin">{{ coin.symbol }}</span>{{ formatNumber(pendingPayment) }}
                   </th>
                 </tr>
               </tbody>
@@ -317,8 +333,8 @@
         <q-card-actions align="right">
           <q-btn
             label="Guardar y cerrar"
-            v-close-popup
             color="primary"
+            @click="submitBill"
           />
           <q-btn
             label="Guardar e imprimir factura"
@@ -601,14 +617,6 @@ export default {
   },
   created () {
     this.getLocalStorage()
-    this.getCoins()
-    this.getTaxes()
-    this.getPaymentMethods()
-    this.getDocuemntTypes()
-    this.setPagination({
-      pagination: this.pagination,
-      filter: undefined
-    })
   },
   methods: {
     updatePage (data) {
@@ -629,18 +637,6 @@ export default {
       }
       this.params.page = 1
       this.getAllPorducts(this.params)
-    },
-    /**
-     * Calculate taxe
-     * @param {Object} taxe
-     */
-    calculateTaxe (taxe) {
-      if (taxe.pivot.type_taxe === 'percentage') {
-        taxe.total = (this.totalBill * taxe.pivot.amount) / 100
-      } else {
-        taxe.total = this.totalBill + taxe.pivot.amount
-      }
-      return taxe.total
     },
     /**
      * Save clients
@@ -838,30 +834,6 @@ export default {
     },
     /**
      * Select category
-     * @param {String} value Value filter
-     * @param {Callback} update update options
-     */
-    getTaxes () {
-      this.$api.get('taxes', {
-        params: {
-          sortBy: 'id',
-          sortOrder: 'desc'
-        }
-      })
-        .then(({ data }) => {
-          this.taxes = data
-          this.taxe = data[0]
-        })
-        .catch(err => {
-          Notify.create({
-            message: err.message,
-            icon: 'warning',
-            color: 'negative'
-          })
-        })
-    },
-    /**
-     * Select category
      * @param {String} valueuserSession Value filter
      * @param {Callback} update update options
      */
@@ -952,6 +924,7 @@ export default {
         .then(({ data }) => {
           this.clear()
           // this.printBill(data.data)
+          this.dialogPayment = false
           this.$q.notify({
             message: 'Factura creada exitosamente',
             icon: 'check_circle',
@@ -976,12 +949,10 @@ export default {
       this.client = JSON.parse(localStorage.getItem('client')) ?? null
       this.invoiceType = JSON.parse(localStorage.getItem('invoiceType')) ?? null
       this.typeOfService = JSON.parse(localStorage.getItem('typeOfService')) ?? null
-      this.calculateTotal()
-    },
-    /**
-     * Save exchange rate
-     */
-    saveExchangeRate () {
+      this.getCoins()
+      this.getPaymentMethods()
+      this.getDocuemntTypes()
+      this.setPagination({ pagination: this.pagination, filter: undefined })
       this.calculateTotal()
     },
     /**
@@ -1035,6 +1006,7 @@ export default {
         this.products.push(data)
         this.calculate(data)
       }
+      this.amount = 1
       localStorage.setItem('products', JSON.stringify(this.products))
     },
     /**
