@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="lHh Lpr fff" class="bg-grey-1">
-    <q-header elevated :class="!$q.dark.isActive ? 'bg-white text-grey-8': ''" height-hint="64">
+  <q-layout view="lHh Lpr fff">
+    <q-header elevated :class="!$q.dark.isActive ? 'bg-white text-grey-8': 'bg-dark'" height-hint="64">
       <q-toolbar class="GPL__toolbar" style="height: 64px">
         <q-btn
           flat
@@ -47,7 +47,41 @@
 
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="text-grey-7" icon="apps">
-            <q-tooltip>Google Apps</q-tooltip>
+            <q-tooltip>Opciones</q-tooltip>
+            <q-popup-proxy>
+              <q-card>
+                <q-card-section class="q-pa-sm">
+                  <div class="row q-gutter-sm justify-between">
+                    <div class="col-3">
+                      <q-btn
+                        flat
+                        dense
+                        round
+                        size="lg"
+                        @click="$q.dark.toggle()"
+                        :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+                      />
+                    </div>
+                    <div class="col-3">
+                      <q-btn flat dense round icon="language" size="lg">
+                        <q-badge rounded color="red" label="es" floating />
+                      </q-btn>
+                    </div>
+                    <div class="col-3">
+                      <q-btn
+                        flat
+                        dense
+                        round
+                        size="lg"
+                        @click="$q.fullscreen.toggle()"
+                        :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
+
+                      />
+                    </div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-popup-proxy>
           </q-btn>
           <q-btn round dense flat color="grey-8" icon="notifications">
             <q-badge color="red" text-color="white" floating>
@@ -71,7 +105,7 @@
                   label="Logout"
                   push
                   size="sm"
-                  v-close-popup
+                  @click="logout"
                 />
               </div>
           </q-menu>
@@ -117,10 +151,11 @@
             <q-expansion-item
               clickable
               class="overflow-hidden GPL__drawer-item"
-              style="border-end-end-radius;: 30px"
+              style="border-end-end-radius: 30px"
               expand-separator
               default-opened
               round
+              :header-class="$q.dark.isActive ? 'text-orange bg-grey-9': 'text-orange bg-grey-2'"
               :icon="link.icon"
               :label="link.title"
               v-if="link.children"
@@ -238,10 +273,18 @@ export default {
       currentPath.value = children
       $router.push({ name: children.route })
     }
+    /**
+     * Logout
+     */
+    function logout () {
+      localStorage.clear()
+      $router.push({ name: 'Login' })
+    }
 
     return {
       leftDrawerOpen,
       search,
+      logout,
       currentPath,
       darkMode,
       createMenu: [
@@ -259,23 +302,65 @@ export default {
           route: 'Home'
         },
         {
-          title: 'Facturación',
+          title: 'Facturas',
           icon: 'receipt',
           children: [
             {
               icon: 'receipt_long',
-              title: 'Facturar',
+              title: 'Nueva factura',
               route: 'Biller'
+            },
+            {
+              icon: 'receipt_long',
+              title: 'Lista de facturas',
+              route: 'Billers'
+            },
+            {
+              icon: 'list_alt',
+              title: 'Reportes',
+              route: 'BoxReport'
+            }
+          ]
+        },
+        {
+          title: 'Inventario',
+          icon: 'inventory_2',
+          children: [
+            {
+              icon: 'category',
+              title: 'Categorias',
+              route: 'Category'
             },
             {
               icon: 'widgets',
               title: 'Productos',
               route: 'Product'
+            }
+          ]
+        },
+        {
+          title: 'Compras',
+          icon: 'local_shipping',
+          children: [
+            {
+              icon: 'post_add',
+              title: 'Nueva orden de compra',
+              route: 'Category'
             },
             {
-              icon: 'list_alt',
-              title: 'Reporte de caja',
-              route: 'BoxReport'
+              icon: 'library_books',
+              title: 'Ordenes de compra',
+              route: 'Category'
+            },
+            {
+              icon: 'person_4',
+              title: 'Proveedores',
+              route: 'Product'
+            },
+            {
+              icon: 'summarize',
+              title: 'Historial de compras',
+              route: 'Product'
             }
           ]
         },
@@ -313,11 +398,6 @@ export default {
               icon: 'summarize',
               title: 'Tipo de factura',
               route: 'InvoiceType'
-            },
-            {
-              icon: 'category',
-              title: 'Categorias',
-              route: 'Category'
             },
             {
               icon: 'supervised_user_circle',
