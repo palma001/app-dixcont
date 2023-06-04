@@ -1,4 +1,4 @@
-name: Despliegue de Quasar App en Pull Request
+name: Despliegue de Dixcont en Pull Request
 
 on:
   pull_request:
