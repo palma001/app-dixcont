@@ -1,12 +1,9 @@
-name: Despliegue en GitHub Pages
+name: Despliegue en Hostinger
 
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -19,21 +16,18 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 18.16.0
+        node-version: 14
 
     - name: Instalar dependencias
       run: npm i
 
     - name: Construir la aplicación
-      run: npx quasar build
+      run: npx quasar build -m pwa
 
-    - name: Desplegar a GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist/spa
-        publish_branch: gh-pages
-        enable_jekyll: false
+    - name: Desplegar en Hostinger
+      run: |
+        ssh u448820835@45.93.102.177 "rm -rf /public_html/develop/*"
+        scp -r dist/pwa/* u448820835@45.93.102.177:/public_html/develop/
 
     - name: Notificar el despliegue exitoso
-      run: echo "La aplicación se ha desplegado correctamente en GitHub Pages."
+      run: echo "La aplicación se ha desplegado correctamente en Hostinger."
