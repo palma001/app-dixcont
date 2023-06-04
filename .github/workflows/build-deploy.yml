@@ -29,8 +29,8 @@ jobs:
 
     - name: Desplegar en Hostinger
       run: |
-        ssh u448820835@45.93.102.177 "rm -rf /public_html/develop/*"
-        scp -r dist/pwa/* u448820835@45.93.102.177:/public_html/develop/
+        ssh u448820835@dixcont.com "rm -rf /public_html/develop/*"
+        scp -r dist/pwa/* u448820835@dixcont.com:/public_html/develop/
 
     - name: Notificar el despliegue exitoso
       run: echo "La aplicación se ha desplegado correctamente en Hostinger."
