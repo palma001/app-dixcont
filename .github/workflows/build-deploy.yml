@@ -32,9 +32,9 @@ jobs:
 
     - name: Desplegar en Hostinger
       run: |
-        sshpass -p ${{ secrets.HOSTINGER_PASSWORD }}
+        sshpass -e -p ${{ secrets.HOSTINGER_PASSWORD }}
         ssh -o StrictHostKeyChecking=no -p 65002 u448820835@45.93.102.177 "rm -rf /home/u448820835/domains/dixcont.com/develop/*"
         scp -o StrictHostKeyChecking=no -r dist/pwa/* u448820835@45.93.102.177:/home/u448820835/domains/dixcont.com/develop/
 
     - name: Notificar el despliegue exitoso
-      run: echo "La aplicación se ha desplegado correctamente en Hostinger."
+      run: echo "La aplicación se ha desplegado correctamente en Hostinger. ${{ secrets.HOSTINGER_PASSWORD }}"
