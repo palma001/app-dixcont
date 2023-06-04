@@ -1,7 +1,7 @@
-name: Despliegue de Dixcont en Pull Request
+name: Despliegue en GitHub Pages
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
@@ -16,19 +16,21 @@ jobs:
     - name: Configurar Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 14
+        node-version: 18.16.0
 
     - name: Instalar dependencias
       run: npm i
 
     - name: Construir la aplicación
-      run: npx quasar build -m pwa
+      run: npx quasar build
 
     - name: Desplegar a GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@4.1.0
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        branch: gh-pages
-        folder: dist
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist/spa
+        publish_branch: gh-pages
+        enable_jekyll: false
 
     - name: Notificar el despliegue exitoso
-      run: echo "La aplicación se ha desplegado correctamente en la rama gh-pages."
+      run: echo "La aplicación se ha desplegado correctamente en GitHub Pages."
