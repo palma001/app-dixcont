@@ -1,9 +1,12 @@
 name: Despliegue en GitHub Pages
 
 on:
-    pull_request:
-      branches:
-        - master
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   deploy:
@@ -23,14 +26,6 @@ jobs:
 
     - name: Construir la aplicación
       run: npx quasar build
-
-    - name: Desplegar a GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist/spa
-        publish_branch: gh-pages
-        enable_jekyll: false
 
     - name: Notificar el despliegue exitoso
       run: echo "La aplicación se ha desplegado correctamente en GitHub Pages."
