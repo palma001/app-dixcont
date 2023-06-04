@@ -35,7 +35,7 @@ jobs:
         echo ${{ secrets.HOSTINGER_PASSWORD }} > sshpass.txt
         chmod 600 sshpass.txt
         export SSHPASS=$(cat sshpass.txt)
-        sshpass -e ssh -o StrictHostKeyChecking=no -p 65002 u448820835@45.93.102.177 scp -o StrictHostKeyChecking=no -r dist/pwa/* u448820835@45.93.102.177:/home/u448820835/domains/dixcont.com/develop/
+        sshpass -e ssh -p 65002 u448820835@45.93.102.177 scp -o StrictHostKeyChecking=no -r dist/pwa/* u448820835@45.93.102.177:/home/u448820835/domains/dixcont.com/develop/
 
     - name: Notificar el despliegue exitoso
       run: echo "La aplicación se ha desplegado correctamente en Hostinger. ${{ secrets.HOSTINGER_PASSWORD }}"
