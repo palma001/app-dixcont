@@ -22,7 +22,7 @@ jobs:
       run: npm i
 
     - name: Construir la aplicación
-      run: npm run build
+      run: npx quasar build -m pwa
 
     - name: Desplegar a GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.0
