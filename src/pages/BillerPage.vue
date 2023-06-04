@@ -911,12 +911,13 @@ export default {
      */
     async saveBill () {
       this.$api.post('invoices', {
-        client_id: this.client.id,
-        seller_id: this.userSession.id,
-        coin_id: this.coin.id,
+        client_id: this.client?.id,
+        seller_id: this.userSession?.id,
+        coin_id: this.coin?.id,
         invoice_taxes: this.invoiceTaxes,
-        invoice_type_id: this.invoiceType.id,
-        user_created_id: this.userSession.id,
+        invoice_type_id: this.invoiceType?.id,
+        type_of_service_id: this.typeOfService?.id,
+        user_created_id: this.userSession?.id,
         exchange_rate: this.exchangeRate,
         products: this.products,
         payments: this.payments

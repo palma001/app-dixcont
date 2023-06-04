@@ -97,7 +97,7 @@
             <q-menu>
               <div style="min-width: 150px;" class="text-center q-pa-md">
                 <q-avatar size="72px">
-                  <img src="https://cdn.quasar.dev/img/avatar4.jpg">
+                  <img src="https://cdn.quasar.dev/img/boy-avatar.png">
                 </q-avatar>
                 <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
                 <q-btn
@@ -150,12 +150,12 @@
           <div v-for="link in links" :key="link.id">
             <q-expansion-item
               clickable
+              expand-separator
+              round
               class="overflow-hidden GPL__drawer-item"
               style="border-end-end-radius: 30px"
-              expand-separator
-              default-opened
-              round
-              :header-class="$q.dark.isActive ? 'text-orange bg-grey-9': 'text-orange bg-grey-2'"
+              :default-opened="validCurrentPath(link, currentPath.route)"
+              :header-class="validCurrentPath(link, currentPath.route) ? $q.dark.isActive ? 'text-orange bg-grey-9': 'text-orange bg-grey-2' : ''"
               :icon="link.icon"
               :label="link.title"
               v-if="link.children"
@@ -281,8 +281,13 @@ export default {
       $router.push({ name: 'Login' })
     }
 
+    function validCurrentPath (link, currentPath) {
+      return link.children.find(children => children.route === currentPath) != null
+    }
+
     return {
       leftDrawerOpen,
+      validCurrentPath,
       search,
       logout,
       currentPath,
@@ -313,7 +318,7 @@ export default {
             {
               icon: 'receipt_long',
               title: 'Lista de facturas',
-              route: 'Billers'
+              route: 'Invoice'
             },
             {
               icon: 'list_alt',
@@ -345,22 +350,22 @@ export default {
             {
               icon: 'post_add',
               title: 'Nueva orden de compra',
-              route: 'Category'
+              route: 'NewPurchase'
             },
             {
               icon: 'library_books',
               title: 'Ordenes de compra',
-              route: 'Category'
+              route: 'Purchase'
             },
             {
               icon: 'person_4',
               title: 'Proveedores',
-              route: 'Product'
+              route: 'Provider'
             },
             {
               icon: 'summarize',
               title: 'Historial de compras',
-              route: 'Product'
+              route: 'PurchaseList'
             }
           ]
         },

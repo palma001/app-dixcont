@@ -64,11 +64,7 @@
                 />
               </div>
               <div class="col-6">
-                <q-input label="Cliente" filled v-model="invoice.client.name" readonly dense>
-                  <template v-slot:append>
-                    <q-btn color="primary" round icon="add_circle" @click.stop.prevent="(openAddClient = true)" size="sm"/>
-                  </template>
-                </q-input>
+                <q-input label="Cliente" filled v-model="invoice.client.name" readonly dense/>
               </div>
               <div class="col-6">
                 <q-input label="Vendedor" filled v-model="invoice.seller.name" readonly dense/>
@@ -76,7 +72,7 @@
               <div class="col-6">
                 <q-input label="Moneda" filled v-model="invoice.coin.name" readonly dense/>
               </div>
-              <div class="col-6">
+              <div class="col-6" v-if="invoice?.tables.length > 0">
                 <q-select
                   filled
                   readonly
@@ -242,24 +238,24 @@
         </q-form>
       </q-card>
     </q-dialog>
-    <div id="printMe" v-show="false">
+    <!-- <div id="printMe" v-show="false">
       <invoice-print :data="invoice" v-if="invoice"/>
     </div>
     <div id="printMeInvoice" v-show="false">
       <bill-of-sale :data="invoice" v-if="invoice"/>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import { Notify, date, is } from 'quasar'
-import InvoicePrint from '../components/InvoicePrint.vue'
-import BillOfSale from '../components/BillOfSale.vue'
+// import InvoicePrint from '../components/InvoicePrint.vue'
+// import BillOfSale from '../components/BillOfSale.vue'
 export default {
-  components: {
-    InvoicePrint,
-    BillOfSale
-  },
+  // components: {
+  //   InvoicePrint,
+  //   BillOfSale
+  // },
   data () {
     return {
       documentType: 'ruc',
