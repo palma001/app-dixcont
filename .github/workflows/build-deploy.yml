@@ -38,4 +38,5 @@ jobs:
         SOURCE: "dist/"
         REMOTE_HOST: dixcont.com
         REMOTE_USER: u448820835
+        REMOTE_PORT: 65002
         TARGET: "/home/u448820835/domains/dixcont.com/public_html/devlop/"
