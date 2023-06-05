@@ -38,4 +38,4 @@ jobs:
         SOURCE: "dist/"
         REMOTE_HOST: dixcont.store
         REMOTE_USER: u448820835
-        TARGET: "/home/u448820835/domains/dixcont.com"
+        TARGET: "/home/u448820835/domains/dixcont.com/public_html/devlop/"
