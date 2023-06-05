@@ -30,8 +30,8 @@ jobs:
     - name: Checkout del repositorio
       uses: actions/checkout@v2
       
-    - name: Prepare SSH to work with the remote server
-      run: ssh-keyscan -H ${{ 45.93.102.177 }}{% endraw%} >> ~/.ssh/known_hosts
+    - name: Adding Known Hosts
+      run: ssh-keyscan -H 45.93.102.177{% endraw%} >> ~/.ssh/known_hosts
 
     - name: Desplegar en Hostinger
       uses: easingthemes/ssh-deploy@v2.1.5
