@@ -22,7 +22,14 @@ jobs:
       run: npm install
     - name: Run build task
       run: npx quasar build
-    - name: Conexión por SSH
+    - name: Configurar FTP
       run: |
-        ssh -o StrictHostKeyChecking=no -p ${{secrets.REMOTE_PORT}} -i ${{secrets.SSH_PRIVATE_KEY}} ${{secrets.REMOTE_USER}}@${{secrets.REMOTE_HOST}} "rm -rf ${{secrets.REMOTE_TARGET}}/*"
-        scp -r dist/* ${{secrets.REMOTE_USER}}@dixcont.com:${{secrets.REMOTE_TARGET}}
+        echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
+        echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
+        echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
+
+    - name: Desplegar en Hostinger
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lftp
+        lftp -c "open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -R -e -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ ./public_html/develop"
