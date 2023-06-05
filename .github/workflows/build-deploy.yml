@@ -33,6 +33,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
         REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        REMOTE_PORT: 65002
         SOURCE: dist/
         TARGET: /home/u448820835/domains/dixcont.com/public_html/develop/
         ARGS: -rlgoDzvc -i -og --chown=user:user
