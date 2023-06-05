@@ -32,4 +32,4 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y lftp
-        lftp -c "open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -R -e -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ /home/u448820835/domains/dixcont.com/develop"
+        lftp -c "open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -R -e -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ /home/u448820835/domains/dixcont.com/public_html/develop"
