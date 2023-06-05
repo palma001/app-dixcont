@@ -36,6 +36,6 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
         ARGS: "-rltgoDzvO --delete"
         SOURCE: "dist/"
-        REMOTE_HOST: dixcont.store
+        REMOTE_HOST: dixcont.com
         REMOTE_USER: u448820835
         TARGET: "/home/u448820835/domains/dixcont.com/public_html/devlop/"
