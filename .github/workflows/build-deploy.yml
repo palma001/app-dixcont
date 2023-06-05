@@ -32,11 +32,18 @@ jobs:
 
     - name: Desplegar en Hostinger
       run: |
+<<<<<<< HEAD
         echo ${{ secrets.HOSTINGER_PASSWORD }} > sshpass.txt
         chmod 600 sshpass.txt
         export SSHPASS=$(cat sshpass.txt)
         sshpass -e ssh -p 65002 u448820835@45.93.102.177 scp -o StrictHostKeyChecking=no -r dist/pwa/* u448820835@45.93.102.177:/home/u448820835/domains/dixcont.com/develop/
 
+=======
+        apt-get update
+        apt-get install -y lftp
+        lftp -c "open -u ${{ secrets.HOSTINGER_USERNAME }},${{ secrets.HOSTINGER_PASSWORD }} ftp://dixcont.store; mirror -R dist/pwa u448820835@45.93.102.177:/home/u448820835/domains/dixcont.com/develop"
+   
+>>>>>>> deploy-example
     - name: Notificar el despliegue exitoso
       run: echo "La aplicación se ha desplegado correctamente en Hostinger. ${{ secrets.HOSTINGER_PASSWORD }}"
 
