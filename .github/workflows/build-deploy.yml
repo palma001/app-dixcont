@@ -22,14 +22,7 @@ jobs:
       run: npm install
     - name: Run build task
       run: npx quasar build
-    - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@main
-      env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          EXCLUDE: "/dist/, /node_modules/"
+    - name: Conexión por SSH
+      run: |
+        ssh -o StrictHostKeyChecking=no -p ${{secrets.REMOTE_PORT}} -i ${{secrets.SSH_PRIVATE_KEY}} ${{secrets.REMOTE_USER}}@${{secrets.REMOTE_HOST}} "rm -rf ${{secrets.REMOTE_TARGET}}/*"
+        scp -r dist/* ${{secrets.REMOTE_USER}}@dixcont.com:${{secrets.REMOTE_TARGET}}
