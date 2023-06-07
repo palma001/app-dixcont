@@ -44,4 +44,4 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y lftp
-        lftp -c "set ssl:verify-certificate no; open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -R --reverse --delete --verbose /dist /develop"
+        lftp -c "set ssl:verify-certificate no; open ftp://$${{secrets.FTP_USERNAME}}:$${{secrets.FTP_PASSWORD}}@$${{secrets.FTP_HOST}}; mirror -R --reverse --delete --verbose /dist /develop"
