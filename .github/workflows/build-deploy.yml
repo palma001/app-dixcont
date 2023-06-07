@@ -22,14 +22,23 @@ jobs:
       run: npm install
     - name: Run build task
       run: npx quasar build
-    - name: Configurar FTP
-      run: |
-        echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
-        echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
-        echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
+    # - name: Configurar FTP
+    #   run: |
+    #     echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
+    #     echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
+    #     echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
 
-    - name: Desplegar en Hostinger
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y lftp
-        lftp -c "set ssl:verify-certificate no; open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -e -R -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ /develop"
+    - name: Despliegue en Hostinger
+      uses: SamKirkland/FTP-Deploy-Action@4.2.0
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: dist/
+        server-dir: public_html/develop
+
+    # - name: Desplegar en Hostinger
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y lftp
+    #     lftp -c "set ssl:verify-certificate no; open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -e -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ /develop"
