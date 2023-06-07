@@ -18,8 +18,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.16.0'
-    - name: Instalar paquetes LFTP
-      run: sudo apt-get install lftp
     - name: Install npm dependencies
       run: npm install
     - name: Run build task
@@ -44,4 +42,4 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y lftp
-        lftp -c "set ssl:verify-certificate no; open ftp://$${{secrets.FTP_USERNAME}}:$${{secrets.FTP_PASSWORD}}@$${{secrets.FTP_HOST}}; mirror -R --reverse --delete --verbose /dist /develop"
+        lftp -c "set ssl:verify-certificate no; open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -R --reverse --delete --verbose /develop"
