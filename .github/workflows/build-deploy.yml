@@ -29,13 +29,14 @@ jobs:
         echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
 
     - name: Despliegue en Hostinger
-      uses: ncipollo/deploy-ftp@v3
+      uses: appleboy/ftp-action@v0.2.0
       with:
-        server: ${{ secrets.FTP_HOST }}
+        host: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        localDir: dist/
-        remoteDir: develop/
+        local_dir: dist/
+        remote_dir: develop
+        args: -vv
 
     # - name: Desplegar en Hostinger
     #   run: |
