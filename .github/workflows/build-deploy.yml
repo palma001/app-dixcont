@@ -1,34 +1,35 @@
-name: Despliegue de Quasar App en Pull Request
+name: Deploy in Hostinger
 
 on:
   pull_request:
     branches:
-      - master
+      - develop
+  push:
+    branches:
+      - develop
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout del repositorio
-      uses: actions/checkout@v2
-
-    - name: Configurar Node.js
-      uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: '18.16.0'
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run build task
+      run: npx quasar build
+    - name: Configurar FTP
+      run: |
+        echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
+        echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
+        echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
 
-    - name: Instalar dependencias
-      run: npm ci
-
-    - name: Construir la aplicación
-      run: npm run build
-
-    - name: Desplegar a GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@4.1.0
-      with:
-        branch: gh-pages
-        folder: dist
-
-    - name: Notificar el despliegue exitoso
-      run: echo "La aplicación se ha desplegado correctamente en la rama gh-pages."
+    - name: Desplegar en Hostinger
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lftp
+        lftp -c "open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -e -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ /home/u448820835/domains/dixcont.com/public_html/develop"
