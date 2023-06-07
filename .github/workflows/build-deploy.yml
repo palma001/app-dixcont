@@ -22,18 +22,18 @@ jobs:
       run: npm install
     - name: Run build task
       run: npx quasar build
-    # - name: Configurar FTP
-    #   run: |
-    #     echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
-    #     echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
-    #     echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
+    - name: Configurar FTP
+      run: |
+        echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
+        echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
+        echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
 
     - name: Despliegue en Hostinger
       uses: SamKirkland/FTP-Deploy-Action@4.2.0
       with:
-        server: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
+        server: $(cat ftp_host.txt)
+        username: $(cat ftp_username.txt)
+        password: $(cat ftp_password.txt)
         local-dir: ./dist/
         server-dir: develop/
 
