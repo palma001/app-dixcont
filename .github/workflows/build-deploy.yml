@@ -29,13 +29,13 @@ jobs:
         echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
 
     - name: Despliegue en Hostinger
-      uses: SamKirkland/FTP-Deploy-Action@4.2.0
+      uses: ncipollo/deploy-ftp@v3
       with:
-        server: ftp://dixcont.com
+        server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
-        password: u448820835.dixcont
-        local-dir: ./dist/
-        server-dir: develop/
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: dist/
+        remoteDir: develop/
 
     # - name: Desplegar en Hostinger
     #   run: |
