@@ -1,4 +1,4 @@
-name: Deploy in Hostinger
+name: Deploy Quasar in Hostinger
 
 on:
   pull_request:
