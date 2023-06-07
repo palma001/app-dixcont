@@ -3,10 +3,10 @@ name: Deploy in Hostinger
 on:
   pull_request:
     branches:
-      - master
+      - deploy-example
   push:
     branches:
-      - master
+      - deploy-example
 
 jobs:
   deploy:
