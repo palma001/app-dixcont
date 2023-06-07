@@ -6,7 +6,7 @@ on:
       - develop
   push:
     branches:
-      - develop
+      - example-hostinger
       jobs:
         deploy:
           runs-on: ubuntu-latest
