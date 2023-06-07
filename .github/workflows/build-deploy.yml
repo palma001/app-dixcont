@@ -31,9 +31,9 @@ jobs:
     - name: Despliegue en Hostinger
       uses: SamKirkland/FTP-Deploy-Action@4.2.0
       with:
-        server: $(cat ftp_host.txt)
-        username: $(cat ftp_username.txt)
-        password: $(cat ftp_password.txt)
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./dist/
         server-dir: develop/
 
