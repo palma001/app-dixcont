@@ -19,13 +19,13 @@ jobs:
         run: npm ci
 
       - name: Generar archivos de producción
-        run: npx quasar build -m pwa
+        run: npx quasar build
 
       - name: Despliegue en GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.TOKEN_GITHUB }}
-          publish_dir: dist/pwa/
+          publish_dir: dist/spa
 
       - name: Mostrar URL de la página
         run: |
