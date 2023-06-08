@@ -1,4 +1,4 @@
-name: Deploy Quasar in Hostinger
+name: Deploy Quasar in Github
 
 on:
   pull_request:
@@ -10,16 +10,13 @@ on:
 
 jobs:
   deploy-in-github:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v2
 
       - name: Instalar dependencias
-        run: npm i
+        run: npm ci
 
       - name: Generar archivos de producción
         run: npx quasar build
