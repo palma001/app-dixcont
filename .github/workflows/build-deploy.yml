@@ -1,17 +1,16 @@
-name: Deploy in Hostinger
+name: Deploy Quasar in Hostinger
 
 on:
   pull_request:
     branches:
       - develop
-  push:
-    branches:
-      - develop
+    types:
+      - closed
 
 jobs:
-  deploy:
+  deploy-in-production:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Install Node.js
@@ -21,7 +20,10 @@ jobs:
     - name: Install npm dependencies
       run: npm install
     - name: Run build task
-      run: npx quasar build
+      run: npx quasar build -m pwa
+    - name: Obtener nombre de la rama
+      id: get_branch
+      run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
     - name: Configurar FTP
       run: |
         echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
@@ -30,6 +32,6 @@ jobs:
 
     - name: Desplegar en Hostinger
       run: |
-        sudo apt-get update
+        sudo apt-get update -qy
         sudo apt-get install -y lftp
-        lftp -c "open -u $(cat ftp_username.txt),$(cat ftp_password.txt) $(cat ftp_host.txt) && mirror -e -x ^\.git/$ -x ^\.github/$ -x ^\.gitignore$ -x ^\.gitattributes$ -x ^\.editorconfig$ -x ^\.eslintrc.js$ -x ^\.prettierrc.js$ -x ^\.travis.yml$ -x ^\.babel.config.js$ -x ^package-lock.json$ -x ^yarn.lock$ -x ^README.md$ -x ^LICENSE$ -x ^\.env$ -x ^\.env.example$ -x ^\.env.local$ -x ^\.env.development$ -x ^\.env.staging$ -x ^\.env.production$ -x ^node_modules/ /home/u448820835/domains/dixcont.com/public_html/develop"
+        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ${{ env.BRANCH_NAME }}/; bye"
