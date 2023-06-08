@@ -21,6 +21,9 @@ jobs:
       run: npm install
     - name: Run build task
       run: npx quasar build -m pwa
+    - name: Obtener nombre de la rama
+      id: get_branch
+      run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
     - name: Configurar FTP
       run: |
         echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
@@ -31,4 +34,4 @@ jobs:
       run: |
         sudo apt-get update -qy
         sudo apt-get install -y lftp
-        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ develop/; bye"
+        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ${{ env.BRANCH_NAME }}/; bye"
