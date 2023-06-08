@@ -35,3 +35,10 @@ jobs:
         sudo apt-get update -qy
         sudo apt-get install -y lftp
         lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ${{ env.BRANCH_NAME }}/; bye"
+
+    - name: Desplegar in Hostinger when is master
+      if: github.base_ref == 'master'
+      run: |
+        sudo apt-get update -qy
+        sudo apt-get install -y lftp
+        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ./; bye"
