@@ -23,4 +23,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.TOKEN_GITHUB }}
-          publish_dir: dist/pwa
+          publish_dir: dist/pwa/
+
+      - name: Mostrar URL de la página
+        run: echo "El despliegue en GitHub Pages se ha completado. La URL de la página es: https://palma001.github.io/app-dixcont/"
