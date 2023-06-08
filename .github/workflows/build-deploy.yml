@@ -1,34 +1,38 @@
-name: Despliegue de Quasar App en Pull Request
+name: Deploy Quasar in Hostinger
 
 on:
   pull_request:
     branches:
+      - develop
       - master
+      - staging
+    types:
+      - closed
 
 jobs:
-  deploy:
+  deploy-in-production:
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout del repositorio
-      uses: actions/checkout@v2
-
-    - name: Configurar Node.js
-      uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: 14
-
-    - name: Instalar dependencias
-      run: npm ci
-
-    - name: Construir la aplicación
-      run: npm run build
-
-    - name: Desplegar a GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@4.1.0
-      with:
-        branch: gh-pages
-        folder: dist
-
-    - name: Notificar el despliegue exitoso
-      run: echo "La aplicación se ha desplegado correctamente en la rama gh-pages."
+        node-version: '18.16.0'
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run build task
+      run: npx quasar build -m pwa
+    - name: Get branch name
+      id: get_branch
+      run: echo "BRANCH_NAME=${{ github.base_ref }}" >> $GITHUB_ENV
+    - name: Configurar FTP
+      run: |
+        echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
+        echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
+        echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
+    - name: Deploy in Hostinger
+      run: |
+        sudo apt-get update -qy
+        sudo apt-get install -y lftp
+        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/${{ env.BRANCH_NAME }}/; bye"
