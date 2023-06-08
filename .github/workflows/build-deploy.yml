@@ -29,14 +29,12 @@ jobs:
         echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
         echo "${{ secrets.FTP_USERNAME }}" >> ftp_username.txt
         echo "${{ secrets.FTP_PASSWORD }}" >> ftp_password.txt
-
-    - name: Desplegar en Hostinger
+    - name: Deploy in Hostinger
       run: |
         sudo apt-get update -qy
         sudo apt-get install -y lftp
         lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ${{ env.BRANCH_NAME }}/; bye"
-
-    - name: Desplegar in Hostinger when is master
+    - name: Deploy in Hostinger when is master
       if: github.base_ref == 'master'
       run: |
         sudo apt-get update -qy
