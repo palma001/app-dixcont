@@ -23,7 +23,7 @@ jobs:
       run: npx quasar build -m pwa
     - name: Get branch name
       id: get_branch
-      run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+      run: echo "BRANCH_NAME=${{ github.base_ref }}" >> $GITHUB_ENV
     - name: Configurar FTP
       run: |
         echo "${{ secrets.FTP_HOST }}" >> ftp_host.txt
