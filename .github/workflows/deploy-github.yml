@@ -28,4 +28,5 @@ jobs:
           publish_dir: dist/pwa/
 
       - name: Mostrar URL de la página
-        run: echo "El despliegue en GitHub Pages se ha completado. La URL de la página es: https://palma001.github.io/app-dixcont/"
+        run: |
+          echo "El despliegue en GitHub Pages se ha completado. La URL de la página es: https://palma001.github.io/app-dixcont/"
