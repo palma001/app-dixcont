@@ -21,7 +21,7 @@ jobs:
       run: npm install
     - name: Run build task
       run: npx quasar build -m pwa
-    - name: Obtener nombre de la rama
+    - name: Get branch name
       id: get_branch
       run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
     - name: Configurar FTP
