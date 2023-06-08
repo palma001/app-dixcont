@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy-in-production:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -35,10 +35,4 @@ jobs:
       run: |
         sudo apt-get update -qy
         sudo apt-get install -y lftp
-        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ${{ env.BRANCH_NAME }}/; bye"
-    - name: Deploy in Hostinger when is master
-      if: github.base_ref == 'master'
-      run: |
-        sudo apt-get update -qy
-        sudo apt-get install -y lftp
-        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/ ./; bye"
+        lftp -e "set ssl:verify-certificate no; open $(cat ftp_host.txt); user $(cat ftp_username.txt) $(cat ftp_password.txt); mirror -X .* -X .*/ --reverse --verbose --delete dist/pwa/${{ env.BRANCH_NAME }}/; bye"
