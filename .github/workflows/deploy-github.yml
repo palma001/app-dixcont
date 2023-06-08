@@ -1,38 +1,5 @@
 name: Deploy Quasar in Hostinger
 
-# on:
-#   pull_request:
-#     branches:
-#       - develop
-#   push:
-#     branches:
-#       - develop
-
-# jobs:
-#   deploy-in-github:
-#     environment:
-#       name: github-pages
-#       url: ${{ steps.deployment.outputs.page_url }}
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout del repositorio
-#         uses: actions/checkout@v2
-
-#       - name: Instalar dependencias
-#         run: npm ci
-
-#       - name: Generar archivos de producción
-#         run: npx quasar build
-
-#       - name: Despliegue en GitHub Pages
-#         uses: peaceiris/actions-gh-pages@v3
-#         with:
-#           github_token: ${{ secrets.TOKEN_GITHUB }}
-#           publish_dir: dist/spa
-
-#       - name: Mostrar URL de la página
-#         run: |
-#           echo "El despliegue en GitHub Pages se ha completado. La URL de la página es: https://palma001.github.io/app-dixcont/"
 on:
   pull_request:
     branches:
@@ -53,27 +20,51 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
+  deploy-in-github:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout del repositorio
+        uses: actions/checkout@v2
+
       - name: Instalar dependencias
-        run: npm ci
+        run: npm i
+
       - name: Generar archivos de producción
         run: npx quasar build
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+
+      - name: Despliegue en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          # Upload entire repository
-          path: './dist/spa'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          github_token: ${{ secrets.TOKEN_GITHUB }}
+          publish_dir: dist/spa
+
+
+# jobs:
+#   # Single deploy job since we're just deploying
+#   deploy:
+#     environment:
+#       name: github-pages
+#       url: ${{ steps.deployment.outputs.page_url }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#       - name: Instalar dependencias
+#         run: npm ci
+#       - name: Generar archivos de producción
+#         run: npx quasar build
+#       - name: Setup Pages
+#         uses: actions/configure-pages@v3
+#       - name: Upload artifact
+#         uses: actions/upload-pages-artifact@v1
+#         with:
+#           # Upload entire repository
+#           path: './dist/spa'
+#       - name: Deploy to GitHub Pages
+#         id: deployment
+#         uses: actions/deploy-pages@v2
